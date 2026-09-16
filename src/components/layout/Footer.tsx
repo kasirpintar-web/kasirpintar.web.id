@@ -79,7 +79,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <a
-                  href="https://kasirpintar.web.id/sitemap.xml"
+                  href="/sitemap.xml"
                   target="_blank"
                   rel="noreferrer"
                   className="hover:text-[#FFE404] transition-colors inline-flex items-center gap-1"
