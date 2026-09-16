@@ -1,0 +1,8 @@
+{
+  "name": "Kasir Pintar Web",
+  "description": "Website Kasir UMKM Gratis! Kelola transaksi, produk, stok, laporan, dan struk dengan mudah bersama Kasir Pintar di kasirpintar.web.id.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

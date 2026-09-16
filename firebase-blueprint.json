@@ -1,0 +1,115 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile associated with an authenticated account and store",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Auth UID of the user" },
+        "name": { "type": "string", "description": "Full name of the user" },
+        "email": { "type": "string", "format": "email", "description": "Email address" },
+        "storeId": { "type": "string", "description": "Store ID associated with the user" },
+        "role": { "type": "string", "enum": ["owner", "cashier", "admin"], "description": "User role" },
+        "createdAt": { "type": "string", "description": "Account creation timestamp" }
+      },
+      "required": ["uid", "name", "email", "storeId", "role"]
+    },
+    "Store": {
+      "title": "Store",
+      "description": "Store information and receipt settings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier of the store" },
+        "ownerId": { "type": "string", "description": "UID of the store owner" },
+        "name": { "type": "string", "description": "Business or store name" },
+        "logoUrl": { "type": "string", "description": "URL of the store logo" },
+        "logoPublicId": { "type": "string", "description": "Cloudinary public ID" },
+        "address": { "type": "string", "description": "Store physical address" },
+        "phone": { "type": "string", "description": "Store phone number" },
+        "email": { "type": "string", "description": "Store contact email" },
+        "receiptFooter": { "type": "string", "description": "Custom footer text printed on receipt" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Last updated timestamp" }
+      },
+      "required": ["id", "ownerId", "name"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Product category grouping",
+      "type": "object",
+      "properties": {
+        "storeId": { "type": "string", "description": "Associated store ID" },
+        "name": { "type": "string", "description": "Category name" },
+        "active": { "type": "boolean", "description": "Whether category is active" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Last updated timestamp" }
+      },
+      "required": ["storeId", "name"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Product inventory item",
+      "type": "object",
+      "properties": {
+        "storeId": { "type": "string", "description": "Associated store ID" },
+        "name": { "type": "string", "description": "Product name" },
+        "price": { "type": "number", "description": "Selling price" },
+        "costPrice": { "type": "number", "description": "Cost/capital price" },
+        "stock": { "type": "number", "description": "Available inventory stock quantity" },
+        "categoryId": { "type": "string", "description": "Associated category ID" },
+        "categoryName": { "type": "string", "description": "Category name snapshot" },
+        "barcode": { "type": "string", "description": "Optional barcode SKU" },
+        "imageUrl": { "type": "string", "description": "Image URL" },
+        "imagePublicId": { "type": "string", "description": "Cloudinary public ID" },
+        "active": { "type": "boolean", "description": "Whether product is active" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Last updated timestamp" }
+      },
+      "required": ["storeId", "name", "price"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Sales transaction record",
+      "type": "object",
+      "properties": {
+        "storeId": { "type": "string", "description": "Associated store ID" },
+        "invoiceNumber": { "type": "string", "description": "Unique invoice receipt code" },
+        "cashierId": { "type": "string", "description": "UID or identifier of cashier" },
+        "cashierName": { "type": "string", "description": "Display name of cashier" },
+        "items": { "type": "array", "description": "Array of purchased items" },
+        "subtotal": { "type": "number", "description": "Subtotal before discounts" },
+        "discount": { "type": "number", "description": "Discount applied" },
+        "total": { "type": "number", "description": "Final total amount" },
+        "payment": { "type": "number", "description": "Amount paid by customer" },
+        "change": { "type": "number", "description": "Change returned to customer" },
+        "paymentMethod": { "type": "string", "description": "Payment method used (cash, qris, transfer)" },
+        "notes": { "type": "string", "description": "Transaction note" },
+        "status": { "type": "string", "enum": ["completed", "cancelled"], "description": "Transaction status" },
+        "createdAt": { "type": "string", "description": "Transaction timestamp" }
+      },
+      "required": ["storeId", "invoiceNumber", "total", "items", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "#/entities/UserProfile",
+      "description": "Stores user profiles keyed by auth UID"
+    },
+    "/stores/{storeId}": {
+      "schema": "#/entities/Store",
+      "description": "Stores store documents keyed by storeId"
+    },
+    "/categories/{categoryId}": {
+      "schema": "#/entities/Category",
+      "description": "Stores categories associated with stores"
+    },
+    "/products/{productId}": {
+      "schema": "#/entities/Product",
+      "description": "Stores product catalog items associated with stores"
+    },
+    "/transactions/{transactionId}": {
+      "schema": "#/entities/Transaction",
+      "description": "Stores completed sales transactions"
+    }
+  }
+}
