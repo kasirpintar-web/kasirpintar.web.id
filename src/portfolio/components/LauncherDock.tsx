@@ -11,14 +11,13 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { to: '/', label: 'Home', icon: Home },
-  { to: '/tentang', label: 'Tentang', icon: User },
-  { to: '/project', label: 'Project', icon: Briefcase },
-  { to: '/skill', label: 'Skill', icon: Award },
-  { to: '/jasa', label: 'Jasa Web', icon: Zap, badge: 'Rp759rb' },
-  { to: '/kontak', label: 'Kontak', icon: Send },
+  { to: '/portofolio-ldp', label: 'Home', icon: Home },
+  { to: '/portofolio-ldp/tentang', label: 'Tentang', icon: User },
+  { to: '/portofolio-ldp/project', label: 'Project', icon: Briefcase },
+  { to: '/portofolio-ldp/skill', label: 'Skill', icon: Award },
+  { to: '/portofolio-ldp/jasa', label: 'Jasa Web', icon: Zap, badge: 'Rp759rb' },
+  { to: '/portofolio-ldp/kontak', label: 'Kontak', icon: Send },
 ];
-
 export const LauncherDock: React.FC = () => {
   return (
     <nav
