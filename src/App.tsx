@@ -18,6 +18,7 @@ import { PrivacyPage } from './pages/public/PrivacyPage';
 import { TermsPage } from './pages/public/TermsPage';
 import { RefundPage } from './pages/public/RefundPage';
 import { NotFoundPage } from './pages/public/NotFoundPage';
+import PortfolioApp from './portfolio/App';
 
 // Dashboard Pages
 import { DashboardOverviewPage } from './pages/dashboard/DashboardOverviewPage';
@@ -46,6 +47,10 @@ export default function App() {
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/refund" element={<RefundPage />} />
           </Route>
+
+
+          {/* Logis Denis Prabowo Portfolio */}
+          <Route path="/portofolio-ldp/*" element={<PortfolioApp />} />
 
           {/* Protected Dashboard Pages */}
           <Route
