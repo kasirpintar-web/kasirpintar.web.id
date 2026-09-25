@@ -166,6 +166,7 @@ export const TransactionsPage: React.FC = () => {
                   <th className="py-3 px-4">Waktu (Asia/Jakarta)</th>
                   <th className="py-3 px-4">Kasir</th>
                   <th className="py-3 px-4">Jumlah Item</th>
+                  <th className="py-3 px-4">Metode</th>
                   <th className="py-3 px-4">Total</th>
                   <th className="py-3 px-4">Status</th>
                   <th className="py-3 px-4 text-right">Aksi</th>
@@ -185,6 +186,9 @@ export const TransactionsPage: React.FC = () => {
                     </td>
                     <td className="py-3 px-4 text-stone-600">
                       {tx.items.reduce((s, i) => s + i.quantity, 0)} item
+                    </td>
+                    <td className="py-3 px-4">
+                      <Badge variant={tx.paymentMethod === 'qris' ? 'brand' : 'neutral'} size="sm">{tx.paymentMethod === 'qris' ? 'QRIS' : 'CASH'}</Badge>
                     </td>
                     <td className="py-3 px-4 font-bold text-stone-900">
                       {formatRupiah(tx.total)}

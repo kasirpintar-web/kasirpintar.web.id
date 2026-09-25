@@ -9,6 +9,8 @@ import { Loading } from '../../components/ui/Loading';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ReceiptPreview } from '../../components/ReceiptPreview';
 import { FirestorePermissionBanner } from '../../components/common/FirestorePermissionBanner';
+import { BarcodeScanner } from '../../components/BarcodeScanner';
+import { Modal } from '../../components/ui/Modal';
 import { isFirestorePermissionError } from '../../firebase/errors';
 import { formatRupiah } from '../../utils/format';
 import {
@@ -23,6 +25,8 @@ import {
   Package,
   Layers,
   Banknote,
+  ScanLine,
+  QrCode,
 } from 'lucide-react';
 
 export const PosKasirPage: React.FC = () => {
@@ -50,6 +54,7 @@ export const PosKasirPage: React.FC = () => {
   const [completedTransaction, setCompletedTransaction] = useState<Transaction | null>(null);
   const [receiptModalOpen, setReceiptModalOpen] = useState(false);
   const [permissionError, setPermissionError] = useState<string | null>(null);
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const loadData = async () => {
     if (!store) return;
@@ -169,6 +174,7 @@ export const PosKasirPage: React.FC = () => {
     setPaymentAmount(0);
     setPaymentInput('');
     setNotes('');
+    setPaymentMethod('cash');
     setCheckoutError(null);
   };
 
@@ -183,6 +189,18 @@ export const PosKasirPage: React.FC = () => {
     const num = parseInt(raw, 10) || 0;
     setPaymentAmount(num);
     setPaymentInput(raw);
+  };
+
+  const handleBarcodeDetected = (barcode: string) => {
+    const normalized = barcode.trim();
+    const product = products.find((p) => p.barcode === normalized && p.isActive);
+    if (!product) {
+      setCheckoutError(`Produk dengan barcode ${normalized} tidak ditemukan.`);
+      return;
+    }
+    setCheckoutError(null);
+    handleAddToCart(product);
+    setScannerOpen(false);
   };
 
   // Checkout Execution
@@ -265,6 +283,10 @@ export const PosKasirPage: React.FC = () => {
             className="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4A2E18]/20 focus:border-[#4A2E18]"
           />
         </div>
+
+        <button type="button" onClick={() => { setCheckoutError(null); setScannerOpen(true); }} className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-stone-900 text-white text-xs font-bold hover:bg-stone-800">
+          <ScanLine className="w-4 h-4" /> Scan Barcode
+        </button>
 
         {/* Category Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
@@ -481,9 +503,23 @@ export const PosKasirPage: React.FC = () => {
             {/* Payment Input & Quick Denominations */}
             {cart.length > 0 && (
               <div className="space-y-3 pt-2 border-t border-stone-100">
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-stone-700">Metode Pembayaran</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button type="button" onClick={() => { setPaymentMethod('cash'); setPaymentAmount(0); setPaymentInput(''); }} className={`p-3 rounded-xl border text-left ${paymentMethod === 'cash' ? 'border-[#4A2E18] bg-amber-50' : 'border-stone-200 bg-white'}`}>
+                      <Banknote className="w-4 h-4 mb-1" />
+                      <span className="block text-xs font-black">CASH / TUNAI</span><span className="text-[10px] text-stone-500">Hitung kembalian</span>
+                    </button>
+                    <button type="button" onClick={() => { setPaymentMethod('qris'); setPaymentAmount(cartTotal); setPaymentInput(String(cartTotal)); }} className={`p-3 rounded-xl border text-left ${paymentMethod === 'qris' ? 'border-[#4A2E18] bg-amber-50' : 'border-stone-200 bg-white'}`}>
+                      <QrCode className="w-4 h-4 mb-1" />
+                      <span className="block text-xs font-black">QRIS</span><span className="text-[10px] text-stone-500">Pencatatan saja</span>
+                    </button>
+                  </div>
+                </div>
+
                 <div className="space-y-1">
                   <label className="block text-xs font-bold text-stone-700">
-                    Jumlah Pembayaran Tunai (Rp)
+                    {paymentMethod === 'qris' ? 'Nominal QRIS (Rp)' : 'Jumlah Pembayaran Tunai (Rp)'}
                   </label>
                   <div className="relative">
                     <Banknote className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -498,8 +534,7 @@ export const PosKasirPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Quick denomination chips */}
-                <div className="grid grid-cols-4 gap-1.5">
+                {paymentMethod === 'cash' && <div className="grid grid-cols-4 gap-1.5">
                   <button
                     type="button"
                     onClick={() => handleQuickPay(cartTotal)}
@@ -528,7 +563,7 @@ export const PosKasirPage: React.FC = () => {
                   >
                     100.000
                   </button>
-                </div>
+                </div>}
 
                 {/* Kembalian Display */}
                 <div className="p-3 rounded-xl bg-stone-50 border border-stone-100 flex items-center justify-between text-xs">
@@ -545,7 +580,7 @@ export const PosKasirPage: React.FC = () => {
                 </div>
 
                 {/* Error warning if insufficient */}
-                {paymentAmount < cartTotal && cartTotal > 0 && paymentAmount > 0 && (
+                {paymentMethod === 'cash' && paymentAmount < cartTotal && cartTotal > 0 && paymentAmount > 0 && (
                   <div className="p-2 rounded-lg bg-red-50 text-red-700 text-[11px] flex items-center gap-1.5 font-semibold">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     Uang kurang {formatRupiah(cartTotal - paymentAmount)}
@@ -575,6 +610,10 @@ export const PosKasirPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <Modal isOpen={scannerOpen} onClose={() => setScannerOpen(false)} title="Scan Barcode Produk" maxWidth="sm">
+        <BarcodeScanner onDetected={handleBarcodeDetected} onClose={() => setScannerOpen(false)} />
+      </Modal>
 
       {/* Post Checkout Struk Preview Modal */}
       <ReceiptPreview
