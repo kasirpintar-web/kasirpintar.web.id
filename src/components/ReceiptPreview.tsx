@@ -132,7 +132,11 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
               <span>{formatRupiah(transaction.total)}</span>
             </div>
             <div className="flex justify-between text-stone-600">
-              <span>Tunai / Bayar</span>
+              <span>Metode</span>
+              <span className="font-bold">{transaction.paymentMethod === 'qris' ? 'QRIS' : 'CASH / TUNAI'}</span>
+            </div>
+            <div className="flex justify-between text-stone-600">
+              <span>Bayar</span>
               <span>{formatRupiah(transaction.payment)}</span>
             </div>
             <div className="flex justify-between font-semibold text-stone-800">
