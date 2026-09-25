@@ -58,7 +58,7 @@ export const DashboardLayout: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-stone-100 flex flex-col">
+    <div className="kasir-app min-h-screen bg-stone-100 flex flex-col">
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white border-b border-stone-200/90 shadow-2xs h-16 flex items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-3">

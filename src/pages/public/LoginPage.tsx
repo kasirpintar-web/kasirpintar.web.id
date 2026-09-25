@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { getFirebaseDiagnostics } from '../../firebase/config';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
@@ -13,12 +12,6 @@ import {
   LogIn,
   CheckCircle2,
   AlertCircle,
-  ShieldAlert,
-  ChevronDown,
-  ChevronUp,
-  Globe,
-  Database,
-  Key,
 } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
@@ -28,9 +21,6 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-
-  // Diagnostics panel toggle (never shows full API key)
-  const [showDiagnostics, setShowDiagnostics] = useState(false);
 
   // Forgot password modal state
   const [forgotModalOpen, setForgotModalOpen] = useState(false);
@@ -42,7 +32,6 @@ export const LoginPage: React.FC = () => {
   const { login, resetPassword, currentUser } = useAuth();
   const navigate = useNavigate();
 
-  const diagnostics = getFirebaseDiagnostics();
   const currentHostname = typeof window !== 'undefined' ? window.location.hostname : 'unknown';
 
   // If already logged in, redirect to dashboard
@@ -204,91 +193,6 @@ export const LoginPage: React.FC = () => {
             Daftar Gratis Sekarang
           </Link>
         </div>
-      </div>
-
-      {/* Diagnostics Panel (Collapsible, no secret keys shown) */}
-      <div className="w-full max-w-md mt-4">
-        <button
-          type="button"
-          onClick={() => setShowDiagnostics(!showDiagnostics)}
-          className="w-full flex items-center justify-between px-4 py-2.5 bg-stone-100/90 hover:bg-stone-200/80 rounded-2xl text-xs font-semibold text-stone-600 transition-colors"
-        >
-          <span className="flex items-center gap-1.5">
-            <ShieldAlert className="w-3.5 h-3.5 text-amber-700" />
-            Informasi Diagnostik Firebase (Debug)
-          </span>
-          {showDiagnostics ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        </button>
-
-        {showDiagnostics && (
-          <div className="mt-2 p-4 rounded-2xl bg-white border border-stone-200 shadow-sm text-xs space-y-3">
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between pb-1.5 border-b border-stone-100 font-bold text-stone-800">
-                <span className="flex items-center gap-1.5">
-                  <Database className="w-3.5 h-3.5 text-stone-500" />
-                  Konfigurasi Firebase
-                </span>
-                <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md font-semibold">
-                  Terkoneksi
-                </span>
-              </div>
-
-              <div className="grid grid-cols-3 gap-1 pt-1 text-[11px]">
-                <span className="text-stone-500">Project ID:</span>
-                <span className="col-span-2 font-mono font-bold text-stone-800">{diagnostics.projectId}</span>
-
-                <span className="text-stone-500">Auth Domain:</span>
-                <span className="col-span-2 font-mono text-stone-800">{diagnostics.authDomain}</span>
-
-                <span className="text-stone-500">Storage Bucket:</span>
-                <span className="col-span-2 font-mono text-stone-800">{diagnostics.storageBucket}</span>
-
-                <span className="text-stone-500">Sender ID:</span>
-                <span className="col-span-2 font-mono text-stone-800">{diagnostics.messagingSenderId}</span>
-
-                <span className="text-stone-500">App ID:</span>
-                <span className="col-span-2 font-mono text-stone-800">{diagnostics.appId}</span>
-              </div>
-            </div>
-
-            <div className="pt-2 border-t border-stone-100 space-y-1.5">
-              <div className="flex items-center gap-1.5 font-bold text-stone-800">
-                <Globe className="w-3.5 h-3.5 text-stone-500" />
-                Domain Runtime Saat Ini
-              </div>
-              <p className="font-mono text-[11px] bg-stone-50 p-2 rounded-lg border border-stone-200 text-stone-800 break-all">
-                {currentHostname}
-              </p>
-              <p className="text-[10px] text-stone-500 leading-normal">
-                Pastikan domain di atas terdaftar pada menu <strong>Authorized domains</strong> di Firebase Authentication Console.
-              </p>
-            </div>
-
-            <div className="pt-2 border-t border-stone-100 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-stone-800">
-                <Key className="w-3.5 h-3.5 text-stone-500" />
-                Status Environment Variable
-              </div>
-              <div className="grid grid-cols-2 gap-1.5 text-[10px] pt-1">
-                <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span> API Key: Tersedia
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Auth Domain: Tersedia
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Project ID: Tersedia
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Storage Bucket: Tersedia
-                </span>
-              </div>
-              <p className="text-[10px] text-stone-400 italic pt-1">
-                * Kunci rahasia / secret API Key tidak ditampilkan secara penuh demi privasi dan keamanan.
-              </p>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Forgot Password Modal */}

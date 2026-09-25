@@ -14,3 +14,17 @@
     scroll-behavior: auto !important;
   }
 }
+
+
+/* Product-like UI polish: restrained surfaces, clearer controls, less template-like decoration. */
+.kasir-app button, .kasir-app input, .kasir-app select, .public-app button, .public-app input, .public-app select {
+  -webkit-tap-highlight-color: transparent;
+}
+.kasir-app input:focus, .kasir-app select:focus, .public-app input:focus, .public-app select:focus {
+  outline: 2px solid rgba(74,46,24,.12); outline-offset: 1px;
+}
+.kasir-app .shadow-xl, .public-app .shadow-xl { box-shadow: 0 12px 32px rgba(28,25,23,.08); }
+.kasir-app .shadow-lg, .public-app .shadow-lg { box-shadow: 0 8px 24px rgba(28,25,23,.07); }
+@media (max-width: 640px) {
+  .kasir-app main { padding-left: .875rem; padding-right: .875rem; }
+}

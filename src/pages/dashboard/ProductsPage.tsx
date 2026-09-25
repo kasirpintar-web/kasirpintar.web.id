@@ -19,6 +19,8 @@ import { Loading } from '../../components/ui/Loading';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { FirestorePermissionBanner } from '../../components/common/FirestorePermissionBanner';
 import { isFirestorePermissionError } from '../../firebase/errors';
+import { ensureEan13, generateBarcodeValue } from '../../utils/barcode';
+import { BarcodeLabel } from '../../components/BarcodeLabel';
 import { formatRupiah } from '../../utils/format';
 import {
   Plus,
@@ -66,6 +68,7 @@ export const ProductsPage: React.FC = () => {
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [permissionError, setPermissionError] = useState<string | null>(null);
+  const [barcodeProduct, setBarcodeProduct] = useState<Product | null>(null);
 
   const loadData = async () => {
     let currentStore = store;
@@ -180,7 +183,9 @@ export const ProductsPage: React.FC = () => {
       setFormError(null);
 
       const catObj = categories.find((c) => c.id === formCategoryId);
-      const cleanBarcode = formBarcode.trim();
+      let cleanBarcode = formBarcode.trim();
+      if (!editingProduct && !cleanBarcode) cleanBarcode = generateBarcodeValue();
+      else if (/^\d{12}$/.test(cleanBarcode)) cleanBarcode = ensureEan13(cleanBarcode);
       const cleanImageUrl = formImageUrl.trim();
 
       if (editingProduct) {
@@ -218,7 +223,11 @@ export const ProductsPage: React.FC = () => {
           productPayload.imageUrl = cleanImageUrl;
         }
 
-        await addProduct(currentStore.id, productPayload);
+        const createdProduct = await addProduct(currentStore.id, productPayload);
+        await loadData();
+        setProductModalOpen(false);
+        setBarcodeProduct(createdProduct);
+        return;
       }
 
       await loadData();
@@ -439,6 +448,16 @@ export const ProductsPage: React.FC = () => {
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
+                      {product.barcode && (
+                        <button
+                          type="button"
+                          onClick={() => setBarcodeProduct(product)}
+                          className="px-2 py-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100 text-[11px] font-bold"
+                          title="Lihat & cetak barcode"
+                        >
+                          Barcode
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => {
@@ -590,6 +609,15 @@ export const ProductsPage: React.FC = () => {
             </Button>
           </div>
         </form>
+      </Modal>
+
+      <Modal
+        isOpen={!!barcodeProduct}
+        onClose={() => setBarcodeProduct(null)}
+        title="Barcode Produk"
+        maxWidth="sm"
+      >
+        <BarcodeLabel product={barcodeProduct} onClose={() => setBarcodeProduct(null)} />
       </Modal>
 
       {/* Add Category Modal */}

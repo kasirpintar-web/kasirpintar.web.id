@@ -63,6 +63,9 @@ export const ReportsPage: React.FC = () => {
     return completedTx.reduce((sum, tx) => sum + tx.total, 0);
   }, [completedTx]);
 
+  const cashRevenue = useMemo(() => completedTx.filter((tx) => tx.paymentMethod === 'cash' || !tx.paymentMethod).reduce((sum, tx) => sum + tx.total, 0), [completedTx]);
+  const qrisRevenue = useMemo(() => completedTx.filter((tx) => tx.paymentMethod === 'qris').reduce((sum, tx) => sum + tx.total, 0), [completedTx]);
+
   const totalCost = useMemo(() => {
     return completedTx.reduce((sum, tx) => {
       const txCost = tx.items.reduce((itemSum, item) => {
@@ -175,6 +178,11 @@ export const ReportsPage: React.FC = () => {
           subtitle="Nilai belanja per pelanggan"
           icon={<Package className="w-5 h-5" />}
         />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <StatsCard title="Pendapatan CASH / TUNAI" value={formatRupiah(cashRevenue)} subtitle="Transaksi tunai selesai" icon={<DollarSign className="w-5 h-5" />} />
+        <StatsCard title="Pendapatan QRIS" value={formatRupiah(qrisRevenue)} subtitle="Pencatatan transaksi QRIS" icon={<Receipt className="w-5 h-5" />} />
       </div>
 
       {/* Charts & Top Products */}

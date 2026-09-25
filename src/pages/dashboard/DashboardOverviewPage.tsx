@@ -28,6 +28,8 @@ export const DashboardOverviewPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [todaySales, setTodaySales] = useState(0);
   const [todayTxCount, setTodayTxCount] = useState(0);
+  const [todayCash, setTodayCash] = useState(0);
+  const [todayQris, setTodayQris] = useState(0);
   const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [lowStockProducts, setLowStockProducts] = useState<Product[]>([]);
@@ -62,6 +64,8 @@ export const DashboardOverviewPage: React.FC = () => {
 
       let salesSum = 0;
       let countSum = 0;
+      let cashSum = 0;
+      let qrisSum = 0;
 
       txList.forEach((tx) => {
         if (tx.status === 'completed') {
@@ -73,12 +77,15 @@ export const DashboardOverviewPage: React.FC = () => {
           ) {
             salesSum += tx.total;
             countSum += 1;
+            if (tx.paymentMethod === 'qris') qrisSum += tx.total; else cashSum += tx.total;
           }
         }
       });
 
       setTodaySales(salesSum);
       setTodayTxCount(countSum);
+      setTodayCash(cashSum);
+      setTodayQris(qrisSum);
       setRecentTransactions(txList.slice(0, 5));
       setProducts(prodList);
       setLowStockProducts(prodList.filter((p) => p.stock <= 5 && p.isActive));
@@ -196,6 +203,11 @@ export const DashboardOverviewPage: React.FC = () => {
         />
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <StatsCard title="CASH / TUNAI Hari Ini" value={formatRupiah(todayCash)} subtitle="Omset tunai transaksi selesai" icon={<TrendingUp className="w-5 h-5" />} />
+        <StatsCard title="QRIS Hari Ini" value={formatRupiah(todayQris)} subtitle="Omset QRIS yang dicatat kasir" icon={<Receipt className="w-5 h-5" />} />
+      </div>
+
       {/* Recent Transactions & Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Recent Transactions (8 cols) */}
@@ -224,6 +236,7 @@ export const DashboardOverviewPage: React.FC = () => {
                     <tr className="text-stone-500 border-b border-stone-100">
                       <th className="pb-2 font-semibold">Invoice</th>
                       <th className="pb-2 font-semibold">Waktu</th>
+                      <th className="pb-2 font-semibold">Metode</th>
                       <th className="pb-2 font-semibold">Total</th>
                       <th className="pb-2 font-semibold">Status</th>
                       <th className="pb-2 font-semibold text-right">Aksi</th>
@@ -237,6 +250,9 @@ export const DashboardOverviewPage: React.FC = () => {
                         </td>
                         <td className="py-3 text-stone-500">
                           {formatDateAsiaJakarta(tx.createdAt)}
+                        </td>
+                        <td className="py-3">
+                          <Badge variant={tx.paymentMethod === 'qris' ? 'brand' : 'neutral'} size="sm">{tx.paymentMethod === 'qris' ? 'QRIS' : 'CASH'}</Badge>
                         </td>
                         <td className="py-3 font-bold text-stone-900">
                           {formatRupiah(tx.total)}
