@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getProducts, getCategories, createTransaction } from '../../firebase/db';
 import { Product, Category, CartItem, Transaction } from '../../types';
@@ -13,6 +13,7 @@ import { BarcodeScanner } from '../../components/BarcodeScanner';
 import { Modal } from '../../components/ui/Modal';
 import { isFirestorePermissionError } from '../../firebase/errors';
 import { formatRupiah } from '../../utils/format';
+import { normalizeBarcode, ensureEan13 } from '../../utils/barcode';
 import {
   Search,
   Plus,
@@ -191,17 +192,42 @@ export const PosKasirPage: React.FC = () => {
     setPaymentInput(raw);
   };
 
-  const handleBarcodeDetected = (barcode: string) => {
-    const normalized = barcode.trim();
-    const product = products.find((p) => p.barcode === normalized && p.isActive);
+  const handleBarcodeDetected = useCallback((barcode: string) => {
+    const raw = String(barcode || '').trim();
+    const normalized = normalizeBarcode(raw);
+    const candidates = new Set([normalized]);
+    if (normalized.length === 12) candidates.add(ensureEan13(normalized));
+
+    const product = products.find((p) => {
+      if (!p.isActive) return false;
+      const saved = normalizeBarcode(String(p.barcode || ''));
+      if (!saved) return false;
+      if (candidates.has(saved)) return true;
+      if (saved.length === 12) return candidates.has(ensureEan13(saved));
+      return false;
+    });
+
     if (!product) {
-      setCheckoutError(`Produk dengan barcode ${normalized} tidak ditemukan.`);
-      return;
+      setCheckoutError(`Barcode ${normalized || raw} terbaca, tetapi produk belum ditemukan. Pastikan barcode produk di Kelola Produk sama dengan barcode yang ditempel.`);
+      return false;
     }
+
     setCheckoutError(null);
     handleAddToCart(product);
     setScannerOpen(false);
-  };
+    return true;
+  }, [products]);
+
+  const speakTransactionComplete = useCallback(() => {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance('Terima kasih. Transaksi Anda telah kami catat.');
+    utterance.lang = 'id-ID';
+    utterance.rate = 0.95;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    window.speechSynthesis.speak(utterance);
+  }, []);
 
   // Checkout Execution
   const handleCheckout = async () => {
@@ -242,9 +268,11 @@ export const PosKasirPage: React.FC = () => {
         })
       );
 
-      // Open receipt modal
+      // Open receipt modal and play a completion announcement after Firestore
+      // confirms the transaction has been recorded successfully.
       setCompletedTransaction(createdTx);
       setReceiptModalOpen(true);
+      speakTransactionComplete();
 
       // Reset cart
       handleClearCart();
@@ -612,7 +640,7 @@ export const PosKasirPage: React.FC = () => {
       </div>
 
       <Modal isOpen={scannerOpen} onClose={() => setScannerOpen(false)} title="Scan Barcode Produk" maxWidth="sm">
-        <BarcodeScanner onDetected={handleBarcodeDetected} onClose={() => setScannerOpen(false)} />
+        <BarcodeScanner onDetected={handleBarcodeDetected} onClose={() => setScannerOpen(false)} errorMessage={checkoutError} />
       </Modal>
 
       {/* Post Checkout Struk Preview Modal */}
