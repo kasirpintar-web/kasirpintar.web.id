@@ -6,9 +6,9 @@ declare global {
   interface Window { BarcodeDetector?: any; }
 }
 
-interface Props { onDetected: (value: string) => void; onClose: () => void; }
+interface Props { onDetected: (value: string) => boolean | void; onClose: () => void; errorMessage?: string | null; }
 
-export const BarcodeScanner: React.FC<Props> = ({ onDetected, onClose }) => {
+export const BarcodeScanner: React.FC<Props> = ({ onDetected, onClose, errorMessage }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [error, setError] = useState('');
@@ -29,7 +29,13 @@ export const BarcodeScanner: React.FC<Props> = ({ onDetected, onClose }) => {
           if (!active || !videoRef.current || videoRef.current.readyState < 2) { if (active) requestAnimationFrame(loop); return; }
           try {
             const codes = await detector.detect(videoRef.current);
-            if (codes?.length && codes[0].rawValue) { active = false; setScanning(false); onDetected(codes[0].rawValue); return; }
+            if (codes?.length && codes[0].rawValue) {
+              const accepted = onDetected(String(codes[0].rawValue));
+              if (accepted !== false) { active = false; setScanning(false); return; }
+              // The camera may recognize a barcode that does not belong to a product.
+              // Keep scanning so the cashier can aim at the correct label.
+              setScanning(true);
+            }
           } catch (_) {}
           if (active) setTimeout(loop, 120);
         };
@@ -51,7 +57,7 @@ export const BarcodeScanner: React.FC<Props> = ({ onDetected, onClose }) => {
       <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 text-white text-[10px] font-bold flex items-center gap-1.5"><ScanLine className="w-3 h-3" /> Kamera depan</div>
       {!scanning && <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white font-bold">Barcode ditemukan</div>}
     </div>
-    {error && <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium flex gap-2"><CameraOff className="w-4 h-4 shrink-0" />{error}</div>}
+    {(error || errorMessage) && <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium flex gap-2"><CameraOff className="w-4 h-4 shrink-0" />{errorMessage || error}</div>}
     <form onSubmit={submitManual} className="space-y-2">
       <label className="text-xs font-bold text-stone-700">Input barcode manual</label>
       <div className="flex gap-2"><input value={manual} onChange={(e) => setManual(e.target.value)} placeholder="Ketik kode barcode..." className="flex-1 px-3 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-sm font-mono focus:outline-none focus:border-[#4A2E18]" /><Button type="submit" variant="primary"><Keyboard className="w-4 h-4 mr-1.5" />Gunakan</Button></div>
