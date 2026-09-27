@@ -141,7 +141,7 @@ export const DashboardOverviewPage: React.FC = () => {
           <Link to="/dashboard/kasir">
             <Button variant="primary" size="md" className="gap-2 shadow-xs">
               <Calculator className="w-4 h-4" />
-              Buka Mesin Kasir
+              MESIN KASIR
             </Button>
           </Link>
           <Link to="/dashboard/products">
