@@ -50,7 +50,7 @@ export const TransactionsPage: React.FC = () => {
     try {
       setLoading(true);
       setPermissionError(null);
-      const list = await getTransactions(store.id, 100);
+      const list = await getTransactions(store.id);
       setTransactions(list);
     } catch (err: any) {
       console.error('Failed to load transactions:', err);

@@ -52,7 +52,7 @@ export const DashboardOverviewPage: React.FC = () => {
       setLoading(true);
       setPermissionError(null);
       const [txList, prodList] = await Promise.all([
-        getTransactions(currentStore.id, 50),
+        getTransactions(currentStore.id),
         getProducts(currentStore.id),
       ]);
 
