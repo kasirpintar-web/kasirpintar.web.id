@@ -59,9 +59,13 @@ export const DashboardLayout: React.FC = () => {
 
   return (
     <div className="kasir-app min-h-screen bg-stone-100 flex flex-col">
-      {/* Top Header */}
+
+      {/* =========================================================
+          TOP HEADER
+      ========================================================= */}
       <header className="sticky top-0 z-30 bg-white border-b border-stone-200/90 shadow-2xs h-16 flex items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-3">
+
           {/* Mobile hamburger */}
           <button
             type="button"
@@ -79,23 +83,33 @@ export const DashboardLayout: React.FC = () => {
               alt="Kasir Pintar"
               className="h-8 w-auto hidden sm:block"
             />
+
             <div className="h-6 w-px bg-stone-200 hidden sm:block"></div>
+
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center text-[#4A2E18] font-bold text-sm overflow-hidden">
                 {store?.logoUrl ? (
-                  <img src={store.logoUrl} alt={store.name} className="w-full h-full object-cover" />
+                  <img
+                    src={store.logoUrl}
+                    alt={store.name}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <StoreIcon className="w-4 h-4" />
                 )}
               </div>
+
               <div>
                 <h1 className="text-sm font-bold text-stone-900 leading-tight truncate max-w-[160px] sm:max-w-xs">
                   {store?.name || 'Toko Saya'}
                 </h1>
+
                 <p className="text-[11px] text-stone-500 flex items-center gap-1">
                   <span>{userProfile?.name || 'Pengguna'}</span>
                   <span>•</span>
-                  <span className="capitalize font-medium text-amber-800">{userProfile?.role || 'Owner'}</span>
+                  <span className="capitalize font-medium text-amber-800">
+                    {userProfile?.role || 'Owner'}
+                  </span>
                 </p>
               </div>
             </div>
@@ -104,6 +118,7 @@ export const DashboardLayout: React.FC = () => {
 
         {/* Right Header actions */}
         <div className="flex items-center gap-2 sm:gap-3">
+
           <Link
             to="/product"
             target="_blank"
@@ -132,12 +147,51 @@ export const DashboardLayout: React.FC = () => {
         </div>
       </header>
 
+
+      {/* =========================================================
+          BANNER PROMOSI
+          Banner tampil tepat di bawah header,
+          sebelum sidebar dan isi dashboard.
+      ========================================================= */}
+      <div className="w-full bg-white border-b border-stone-200 px-3 py-3 sm:px-5 lg:px-6">
+        <div className="max-w-7xl mx-auto">
+
+          <a
+            href="https://wa.me/6282379474173?text=Halo%20Kasir%20Pintar%2C%20saya%20tertarik%20dengan%20Aplikasi%20Kasir%20Pintar."
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Hubungi Kasir Pintar melalui WhatsApp"
+            className="block group"
+          >
+            <div className="overflow-hidden rounded-2xl border border-stone-200 shadow-sm transition-all duration-200 group-hover:shadow-md group-hover:border-stone-300">
+
+              <img
+                src="https://cdn.phototourl.com/member/2026-09-27-fd89e303-5ddb-4b4a-a55a-fe18441aa574.jpg"
+                alt="Selamat Bertransaksi - Download Aplikasi Kasir Pintar"
+                className="block w-full h-auto object-cover"
+                loading="eager"
+              />
+
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+
+      {/* =========================================================
+          DASHBOARD AREA
+      ========================================================= */}
       <div className="flex-1 flex overflow-hidden">
+
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex flex-col w-64 bg-white border-r border-stone-200/90 py-5 px-3 shrink-0">
+
           <div className="space-y-1 flex-1">
+
             {navItems.map((item) => {
               const Icon = item.icon;
+
               return (
                 <NavLink
                   key={item.path}
@@ -156,16 +210,28 @@ export const DashboardLayout: React.FC = () => {
                 </NavLink>
               );
             })}
+
           </div>
 
           {/* User & Store Status Card */}
           <div className="pt-4 border-t border-stone-100">
+
             <div className="p-3 bg-stone-50 rounded-xl border border-stone-200/60 mb-3">
+
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-semibold text-stone-500 uppercase">Status Akun</span>
-                <Badge variant="brand" size="sm">Gratis Aktif</Badge>
+                <span className="text-[11px] font-semibold text-stone-500 uppercase">
+                  Status Akun
+                </span>
+
+                <Badge variant="brand" size="sm">
+                  Gratis Aktif
+                </Badge>
               </div>
-              <p className="text-xs text-stone-600 truncate">{currentUser.email}</p>
+
+              <p className="text-xs text-stone-600 truncate">
+                {currentUser.email}
+              </p>
+
             </div>
 
             <button
@@ -176,64 +242,87 @@ export const DashboardLayout: React.FC = () => {
               <LogOut className="w-4 h-4 text-stone-400" />
               <span>Keluar (Logout)</span>
             </button>
+
           </div>
         </aside>
 
-        {/* Main Content Area */}
+
+        {/* =========================================================
+            MAIN CONTENT
+        ========================================================= */}
         <main className="flex-1 overflow-y-auto pb-24 md:pb-8 p-4 sm:p-6 lg:p-8">
+
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>
+
         </main>
+
       </div>
 
-      {/* Mobile Bottom Navigation Bar (1-hand UX) */}
+
+      {/* =========================================================
+          MOBILE BOTTOM NAVIGATION
+      ========================================================= */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-stone-200/90 px-2 py-1.5 flex items-center justify-around shadow-lg">
+
         <NavLink
           to="/dashboard"
           end
           className={({ isActive }) =>
             `flex flex-col items-center py-1 px-2.5 rounded-lg text-[10px] font-semibold transition-colors ${
-              isActive ? 'text-[#4A2E18] font-bold' : 'text-stone-500'
+              isActive
+                ? 'text-[#4A2E18] font-bold'
+                : 'text-stone-500'
             }`
           }
         >
           <LayoutDashboard className="w-5 h-5 mb-0.5" />
           <span>Home</span>
         </NavLink>
+
         <NavLink
           to="/dashboard/kasir"
           className={({ isActive }) =>
             `flex flex-col items-center py-1 px-3 rounded-xl text-[10px] font-bold transition-colors ${
-              isActive ? 'bg-[#FFE404] text-[#2E1A0C] shadow-xs' : 'text-[#4A2E18] bg-yellow-100/80'
+              isActive
+                ? 'bg-[#FFE404] text-[#2E1A0C] shadow-xs'
+                : 'text-[#4A2E18] bg-yellow-100/80'
             }`
           }
         >
           <Calculator className="w-5 h-5 mb-0.5" />
           <span>Kasir</span>
         </NavLink>
+
         <NavLink
           to="/dashboard/products"
           className={({ isActive }) =>
             `flex flex-col items-center py-1 px-2.5 rounded-lg text-[10px] font-semibold transition-colors ${
-              isActive ? 'text-[#4A2E18] font-bold' : 'text-stone-500'
+              isActive
+                ? 'text-[#4A2E18] font-bold'
+                : 'text-stone-500'
             }`
           }
         >
           <Package className="w-5 h-5 mb-0.5" />
           <span>Produk</span>
         </NavLink>
+
         <NavLink
           to="/dashboard/transactions"
           className={({ isActive }) =>
             `flex flex-col items-center py-1 px-2.5 rounded-lg text-[10px] font-semibold transition-colors ${
-              isActive ? 'text-[#4A2E18] font-bold' : 'text-stone-500'
+              isActive
+                ? 'text-[#4A2E18] font-bold'
+                : 'text-stone-500'
             }`
           }
         >
           <ReceiptText className="w-5 h-5 mb-0.5" />
           <span>Transaksi</span>
         </NavLink>
+
         <button
           type="button"
           onClick={() => setMobileDrawerOpen(true)}
@@ -242,41 +331,59 @@ export const DashboardLayout: React.FC = () => {
           <Menu className="w-5 h-5 mb-0.5" />
           <span>Menu</span>
         </button>
+
       </nav>
 
-      {/* Mobile Drawer (Modal/Slide-over) */}
+
+      {/* =========================================================
+          MOBILE DRAWER
+      ========================================================= */}
       {mobileDrawerOpen && (
         <div className="fixed inset-0 z-50 md:hidden flex">
+
           <div
             className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs"
             onClick={() => setMobileDrawerOpen(false)}
           />
+
           <div className="relative w-72 max-w-[80vw] bg-white h-full p-5 flex flex-col justify-between shadow-2xl z-10">
+
             <div>
+
               <div className="flex items-center justify-between pb-4 border-b border-stone-100 mb-4">
+
                 <div className="flex items-center gap-2">
+
                   <img
                     src="https://cdn.phototourl.com/member/2026-09-15-fdac8264-8204-4be8-b302-30fb9cb8827d.png"
                     alt="Kasir Pintar"
                     className="h-7 w-auto"
                   />
+
                 </div>
+
                 <button
                   type="button"
                   onClick={() => setMobileDrawerOpen(false)}
                   className="p-1 rounded-lg text-stone-400 hover:bg-stone-100"
+                  aria-label="Tutup menu"
                 >
                   <X className="w-5 h-5" />
                 </button>
+
               </div>
 
+
               <div className="space-y-1">
+
                 {navItems.map((item) => {
                   const Icon = item.icon;
+
                   const active =
                     item.path === '/dashboard'
                       ? location.pathname === '/dashboard'
                       : location.pathname.startsWith(item.path);
+
                   return (
                     <Link
                       key={item.path}
@@ -293,14 +400,26 @@ export const DashboardLayout: React.FC = () => {
                     </Link>
                   );
                 })}
+
               </div>
+
             </div>
 
+
             <div className="pt-4 border-t border-stone-100 space-y-2">
+
               <div className="px-3 py-2 bg-stone-50 rounded-xl text-xs text-stone-600">
-                <p className="font-bold text-stone-900 truncate">{store?.name}</p>
-                <p className="truncate text-[11px] text-stone-500">{currentUser.email}</p>
+
+                <p className="font-bold text-stone-900 truncate">
+                  {store?.name}
+                </p>
+
+                <p className="truncate text-[11px] text-stone-500">
+                  {currentUser.email}
+                </p>
+
               </div>
+
               <button
                 type="button"
                 onClick={() => {
@@ -312,12 +431,18 @@ export const DashboardLayout: React.FC = () => {
                 <LogOut className="w-4 h-4" />
                 <span>Keluar Akun</span>
               </button>
+
             </div>
+
           </div>
+
         </div>
       )}
 
-      {/* Logout Confirmation Dialog */}
+
+      {/* =========================================================
+          LOGOUT CONFIRMATION
+      ========================================================= */}
       <ConfirmationDialog
         isOpen={logoutModalOpen}
         onClose={() => setLogoutModalOpen(false)}
@@ -328,6 +453,7 @@ export const DashboardLayout: React.FC = () => {
         cancelLabel="Batal"
         isLoading={isLoggingOut}
       />
+
     </div>
   );
 };
