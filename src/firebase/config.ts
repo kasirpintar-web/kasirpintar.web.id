@@ -9,16 +9,13 @@ const OFFICIAL_CONFIG = {
   projectId: 'kasirpintarnweeee',
   storageBucket: 'kasirpintarnweeee.firebasestorage.app',
   messagingSenderId: '488380916730',
-  appId: '1:488380916730:web:eaf4e13fd0f1c7c904fa43'
+  appId: '1:488380916730:web:eaf4e13fd0f1c7c904fa43',
 };
 
-
-// Ensure any typo like '_Qt3H5OAII' in environment does not override the valid API key
-const getCleanEnv = (val: string | undefined, expectedFallback: string): string => {
-  if (!val || val.trim() === '' || val.includes('_Qt3H5OAII')) {
-    return expectedFallback;
-  }
-  return val.trim();
+// Use Vite environment variables when provided, otherwise use the Firebase Web App config above.
+const getCleanEnv = (val: string | undefined, fallback: string): string => {
+  const cleaned = val?.trim();
+  return cleaned ? cleaned : fallback;
 };
 
 export const firebaseConfig = {

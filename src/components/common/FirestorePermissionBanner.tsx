@@ -105,7 +105,7 @@ export const FirestorePermissionBanner: React.FC<{
           <li>
             Buka tab <strong>Rules</strong> di konsol Firebase:{' '}
             <a
-              href="https://console.firebase.google.com/project/kasirpintarwebid/firestore/rules"
+              href="https://console.firebase.google.com/project/kasirpintarnweeee/firestore/rules"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-emerald-700 underline inline-flex items-center gap-1 hover:text-emerald-800"
