@@ -149,11 +149,9 @@ export const DashboardLayout: React.FC = () => {
 
 
       {/* =========================================================
-          BANNER PROMOSI
-          Banner tampil tepat di bawah header,
-          sebelum sidebar dan isi dashboard.
+          BANNER PROMOSI — HANYA TAMPIL DI HP
       ========================================================= */}
-      <div className="w-full bg-white border-b border-stone-200 px-3 py-3 sm:px-5 lg:px-6">
+      <div className="w-full bg-white border-b border-stone-200 px-3 py-3 sm:px-5 lg:px-6 md:hidden">
         <div className="max-w-7xl mx-auto">
 
           <a
